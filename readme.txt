@@ -58,8 +58,10 @@ Number Station Name    Station nickname
 33     PE Air
 
 The output files have the following output format:
-(NOTE: erroneous values have been assigned the value 999.  Spurious data can still occur within the physical bounds of the parameters
-so it is not possible to perfectly filter the data.)  
+(NOTE: erroneous values have been assigned the value 999
+ or one of these values '999.00', '999', '999.999', '999999.00', '*********'
+ Spurious data can still occur within the physical bounds of the parameters
+ so it is not possible to perfectly filter the data.)  
 
 | Column | Name                   | Unit                                   |
 +----+----------+------------------------------+---------------------+----------------------------------------+
@@ -108,6 +110,59 @@ so it is not possible to perfectly filter the data.)
 
 
  
+Old version:
 
-
++----+----------+------------------------------+---------------------+----------------------------------------+ 
+| ID | Param_ID | Name                         | Modify_date         | Unit                                   | 
++----+----------+------------------------------+---------------------+----------------------------------------+ 
+|  1 |        4 | SWin                         | 2011-12-02 14:30:32 | SW_down [W m-2]                        | 
+|  2 |        5 | SWout                        | 2011-12-02 14:30:32 | SW_up [W m-2]                          | 
+|  3 |        6 | Net Radiation                | 2011-12-02 14:30:32 | Net Radiation F [W m-2]                | 
+|  4 |        7 | Air Temperture-TC Air 1      | 2011-12-02 14:30:32 | TC Air 1 G Air Temperature [degC]      | 
+|  5 |        8 | Air Temperture-TC Air 2      | 2011-12-02 14:30:32 | TC Air 2 H Air Temperature [degC]      | 
+|  6 |        9 | Air Temperture-CS500 T Air 1 | 2011-12-02 14:30:32 | CS500 T Air 1 I Air Temperature [degC] | 
+|  7 |       10 | Air Temperture-CS500 T Air 2 | 2011-12-02 14:30:32 | CS500 T Air 2 J Air Temperature [degC] | 
+|  8 |       11 | Relative Humidity-RH 1       | 2011-12-02 14:30:32 | RH 1 K Relative Humidity [%] **        | 
+|  9 |       12 | Relative Humidity-RH 2       | 2011-12-02 14:30:32 | RH 2 L Relative Humidity [%] **        | 
+| 10 |       13 | Windspeed-U1                 | 2011-12-02 14:30:32 | U1 M Wind Speed [m/s]                  | 
+| 11 |       14 | Windspeed-U2                 | 2011-12-02 14:30:32 | U2 N Wind Speed [m/s]                  | 
+| 12 |       15 | Wind Direction-U Dir 1       | 2011-12-02 14:30:32 | U Dir 1 O [deg]                        | 
+| 13 |       16 | Wind Direction-U Dir 2       | 2011-12-02 14:30:32 | U Dir 2 P [deg]                        | 
+| 14 |       17 | Atmos Pressure               | 2011-12-02 14:30:32 | Atmos Pressure Q [mbar]                | 
+| 15 |       18 | Snow Height 1                | 2011-12-02 14:30:32 | Snow Height 1 R [m]                    | 
+| 16 |       19 | Snow Height 2                | 2011-12-02 14:30:32 | Snow Height 2 S [m]                    | 
+| 17 |       20 | Snow Temperature 1           | 2011-12-02 14:30:32 | T Snow 1 T [degC]                      | 
+| 18 |       21 | Snow Temperature 2           | 2011-12-02 14:30:32 | T Snow 2 U [degC]                      | 
+| 19 |       22 | Snow Temperature 3           | 2011-12-02 14:30:32 | T Snow 3 V [degC]                      | 
+| 20 |       23 | Snow Temperature 4           | 2011-12-02 14:30:32 | T Snow 4 W [degC]                      | 
+| 21 |       24 | Snow Temperature 5           | 2011-12-02 14:30:32 | T Snow 5 X [degC]                      | 
+| 22 |       25 | Snow Temperature 6           | 2011-12-02 14:30:32 | T Snow 6 Y [degC]                      | 
+| 23 |       26 | Snow Temperature 7           | 2011-12-02 14:30:32 | T Snow 7 Z [degC]                      | 
+| 24 |       27 | Snow Temperature 8           | 2011-12-02 14:30:32 | T Snow 8 AA [degC]                     | 
+| 25 |       28 | Snow Temperature 9           | 2011-12-02 14:30:32 | T Snow 9 AB [degC]                     | 
+| 26 |       29 | Snow Temperature 10          | 2011-12-02 14:30:32 | T Snow 10 AC [degC]                    | 
+| 27 |       30 | Battery Voltage              | 2011-12-02 14:30:32 | Battery Voltage [V]                    | 
+| 28 |       31 | SWinMax                      | 2011-12-02 14:30:32 | [W m-2]                                | 
+| 29 |       32 | SWoutMax                     | 2011-12-02 14:30:32 | [W m-2]                                | 
+| 30 |       33 | NetRadMax                    | 2011-12-02 14:30:32 | NetRadMax[W m-2]                       | 
+| 31 |       34 | Max Air Temperture1 (TC)     | 2011-12-02 14:30:32 | Max Air Temperture1 (TC) [degC]        | 
+| 32 |       35 | Max Air Temperture2 (TC)     | 2011-12-02 14:30:32 | Max Air Temperture2 (TC)[degC]         | 
+| 33 |       36 | Min Air Temperture1 (TC)     | 2011-12-02 14:30:32 | Min Air Temperture1 (TC)[degC]         | 
+| 34 |       37 | Min Air Temperture2 (TC)     | 2011-12-02 14:30:32 | Min Air Temperture2 (TC) [degC]        | 
+| 35 |       38 | Max Windspeed-U1             | 2011-12-02 14:30:32 | Max Windspeed-U1 [m/s]                 | 
+| 36 |       39 | Max Windspeed-U2             | 2011-12-02 14:30:32 | Max Windspeed-U2 [m/s]                 | 
+| 37 |       40 | StdDev Windspeed-U1          | 2011-12-02 14:30:32 | StdDev Windspeed-U1 [m/s]              | 
+| 38 |       41 | StdDev Windspeed-U2          | 2011-12-02 14:30:32 | StdDev Windspeed-U2 [m/s]              | 
+| 39 |       42 | Ref Temperature              | 2011-12-02 14:30:32 | Ref Temperature [degC]                 | 
+| 40 |       43 | Windspeed@2m                 | 2011-12-02 14:30:32 | Windspeed@2m [m/s]                     | 
+| 41 |       44 | Windspeed@10m                | 2011-12-02 14:30:32 | Windspeed@10m [m/s]                    | 
+| 42 |       45 | WindSensorHeight1            | 2011-12-02 14:30:32 | WindSensorHeight1 [m]                  | 
+| 43 |       46 | WindSensorHeight2            | 2011-12-02 14:30:32 | WindSensorHeight2 [m]                  | 
+| 44 |       47 | Albedo                       | 2011-12-02 14:30:32 | Albedo                                 | 
+| 45 |       48 | Zenith Angle                 | 2011-12-02 14:30:32 | Zenith Angle [deg]                     | 
+| 46 |       49 | QCl01-08                     | 2011-12-02 14:30:32 | QCl01-08                               | 
+| 47 |       50 | QCl09-16                     | 2011-12-02 14:30:32 | QCl09-16                               | 
+| 48 |       51 | QCl17-24                     | 2011-12-02 14:30:32 | QCl17-24                               | 
+| 49 |       52 | QCl25-27                     | 2011-12-02 14:30:32 | QCl25-27                               | 
++----+----------+------------------------------+---------------------+----------------------------------------+ 
 
