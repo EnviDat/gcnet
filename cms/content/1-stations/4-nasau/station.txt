@@ -1,0 +1,9 @@
+Title: NASA-U
+
+----
+
+Description: In the following, the data from the meteorological station are displayed individually in two charts each. The first chart visualizes daily means/or sums for all the data which are available. In the second chart, raw data in hourly time resolution of the last 14 days are displayed (quickview). If a chart is empty, then there is no data available. This data portal is in beta version and can be adapted according to your feedback, so please do not hesitate and contact (email: meteo@wsl.ch text: us). All times displayed are in Zulu = UTC.
+
+----
+
+Station: 3

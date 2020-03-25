@@ -1,0 +1,11 @@
+Title: Greenland Climate Network (GC-Net)
+
+----
+
+Description: 
+
+**Prof. Dr. Konrad Steffen is the principal investigator of this project.**
+
+GC-Net Automated Weather Stations (AWS) are collecting climate information on Greenland's ice sheet. They are equipped with communication satellite transmitters that enable near-real time monitoring of weather conditions on the Greenland ice sheet. Transmission latency is typically 1-2 hours, and occasionally as long as 48 hours. All times displayed are Zulu = UTC.
+
+More information about the stations themselves can be found (link: http://cires1.colorado.edu/steffen/gcnet/GC-Net_info.pdf text: here popup: yes). For more information on the GC-NET see: (link: http://cires1.colorado.edu/steffen/gcnet/ text: GC-Net@CIRES.colorado.edu popup: yes).

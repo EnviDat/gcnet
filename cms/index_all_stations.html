@@ -1,0 +1,428 @@
+<!DOCTYPE HTML>
+
+<html >
+<head>
+
+    <title>Data Viz Greenland Data</title>
+
+    <script>
+        function detectIE() {
+            var ua = window.navigator.userAgent;
+
+            var msie = ua.indexOf('MSIE ');
+            if (msie > 0) {
+                // IE 10 or older => return version number
+                return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+            }
+
+            var trident = ua.indexOf('Trident/');
+            if (trident > 0) {
+                // IE 11 => return version number
+                var rv = ua.indexOf('rv:');
+                return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+            }
+
+            var edge = ua.indexOf('Edge/');
+            if (edge > 0) {
+            // Edge (IE 12+) => return version number
+            return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
+            }
+
+            // other browser
+            return false;
+        }    
+
+        function addScript( src ) {
+            var s = document.createElement( 'script' );
+            s.setAttribute( 'src', src );
+            document.head.appendChild( s );
+        }
+
+        var IEversion = detectIE();
+
+        if (IEversion){
+            addScript('https://cdnjs.cloudflare.com/ajax/libs/bluebird/3.3.5/bluebird.min.js');
+            addScript('https://cdn.polyfill.io/v2/polyfill.min.js');
+        }
+        // addScript('https://unpkg.com/axios/dist/axios.min.js');
+
+    </script>
+
+
+    <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+    <script src="https://www.amcharts.com/lib/3/serial.js"></script>
+    <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+    <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+        
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <script src="./charts.js"></script>
+
+    <script src="./data_conversion.js"></script>
+    
+    <script src="./date_fns.js"></script>
+
+    <script src="./progressbar.min.js"></script>
+    
+
+</head>
+
+<section id="template_station" style="display: none; padding: 50px 0;">
+        <h1 id="station_title" style="text-align: center">Station </h1>
+
+        <div style="text-align: center">
+            <!-- <a id="station_file_link" href="" target="_blank"></a> -->
+            <button id="station_reload_btn" onclick="">Load all data from this Year</button>
+            <button id="station_reload_btn_14" onclick="">Load the last 14 days</button>
+        </div>
+
+        <div id="station_weather_chartdiv" style="width: 50%; height: 450px; float: left;">
+            <img class="spinner" style="position:relative; top: 50%; left: 50%; width: 15%; " src="loadingspinner.gif" alt="">                        
+        </div>
+
+        <div id="station_wind_chartdiv" style="width: 50%; height: 450px; float: right;">
+            <img class="spinner" style="position:relative; top: 50%; right: 50%; width: 15%; " src="loadingspinner.gif" alt="">                        
+        </div>
+        
+</section>
+
+<body id="main" style="background-color: #fefdf7; background-image: url('noisy_bg.png')">
+    <div id="progressbar" style="position: fixed; top: 0; left: 0; display: inline-flex; width: 100%; height: 5px;"></div>
+</body>
+
+
+<script lang="javascript">
+
+    var amChartTheme = AmCharts.themes.light;
+
+    var progress = new ProgressBar.Line('#progressbar', {easing: 'easeInOut'});
+    var filesLoaded = 0;
+    var filesToLoad = 0;
+    var dateFormat = "MM/DD/YYYY HH:mm";
+
+    const baseurl = 'https://www.envidat.ch/gui/gcnet/';
+
+    var DataSets = [
+        { name: 'Swiss Camp', fileName: '1.csv', data : { }, shortFileName: '1_v.csv'},
+        { name: 'Swiss Camp-10m', fileName: '0.csv',  data : { }, shortFileName: '0_v.csv'},
+        { name: 'Summit', fileName: '6.csv', data : { }, shortFileName: '6_v.csv'},
+        { name: 'JAR-1', fileName: '9.csv', data : { }, shortFileName: '9_v.csv'},
+        { name: 'Saddle', fileName: '10.csv', data : { }, shortFileName: '10_v.csv'},
+        { name: 'NASA-E', fileName: '12.csv', data : { }, shortFileName: '12_v.csv'},
+        { name: 'East GRIP', fileName: '24.csv', data : { }, shortFileName: '24_v.csv'},
+        { name: 'LAR1', fileName: '30.csv', data : { }, shortFileName: '30_v.csv'},
+
+        { name: 'CP1', fileName: '2.csv', data : { }, shortFileName: '2_v.csv'},
+        { name: 'NASA-U', fileName: '3.csv', data : { }, shortFileName: '3_v.csv'},
+        { name: 'DYE-II', fileName: '8.csv', data : { }, shortFileName: '8_v.csv'},
+        { name: 'South Dome', fileName: '11.csv', data : { }, shortFileName: '11_v.csv'},
+        { name: 'NASA-SE', fileName: '15.csv', data : { }, shortFileName: '15_v.csv'},
+        { name: 'NEEM', fileName: '23.csv', data : { }, shortFileName: '23_v.csv'},
+
+        { name: 'GITS', fileName: '4.csv', data : { }, shortFileName: '4_v.csv'},
+        { name: 'Humboldt', fileName: '5.csv', data : { }, shortFileName: '5_v.csv'},
+        { name: 'Tunu-N', fileName: '7.csv', data : { }, shortFileName: '7_v.csv'},
+        { name: 'PET', fileName: '22.csv', data : { }, shortFileName: '22_v.csv'},
+        { name: 'PE_blu', fileName: '32.csv', data : { }, shortFileName: '32_v.csv'},
+        { name: 'PE_gun', fileName: '31.csv', data : { }, shortFileName: '31_v.csv'},
+        { name: 'PE_AIR', fileName: '33.csv', data : { }, shortFileName: '33_v.csv'},
+
+    ];
+
+    const stationTemplate = $('#template_station');
+
+    $( document ).ready(function() {
+        if (IEversion){
+            ShowError('Internet Explorer version ' + IEversion + ' not supported use Firefox / Chrome');
+        } else {
+            filesToLoad = DataSets.length;
+            LoadFileData();
+        }
+    });
+
+    function LoadFileData(){
+
+        for (let i = 0; i < DataSets.length; i++) {
+
+            var dataset = DataSets[i];
+
+            loadFileFromBackend(dataset.shortFileName);
+            
+            // setTimeout(loadFileFromBackend(dataset.fileName), 3000);
+        }
+
+    }
+
+
+    function loadFileFromBackend(fileName){
+
+        var url = baseurl + fileName;
+
+        axios.get(url)
+        .then(function (response) {
+
+            // console.log("got file " + response);
+            var splits = response.request.responseURL.split('/');
+            var fileName = splits[splits.length - 1];
+
+            var dSet = GetDataSet(fileName);
+
+            if (dSet !== undefined){
+                
+                if (fileName === dSet.fileName) {
+                    dSet.filedata = response.data;
+                    dSet.filedataLoaded = true;
+
+                    LoadChartDataset(dSet, false);
+
+                } else if (fileName === dSet.shortFileName) {
+
+                    dSet.data = response.data;
+                    dSet.dataLoaded = true;
+                    
+                    LoadChartDataset(dSet, true);
+                }
+
+            } else {
+                ShowError("Couldn't load Dataset definition for " + fileName + " response " + response);
+            }
+
+            filesLoaded++;
+            progress.animate(filesLoaded / filesToLoad);
+        })
+        .catch(function (error) {
+
+            // console.log("got error " + JSON.stringify(error) + " error: " + error.message + ' ' + error.response);
+            console.log("got error: " + error.message + ' ' + error.status);
+
+            var status = "unknown";
+            var fileName = "";
+            var station = "";
+
+            if (error.request){
+                var splits = error.request.responseURL.split('/');
+                status = error.request.status;
+                fileName = splits[splits.length - 1];
+
+                if (fileName){                
+                    var dSet = GetDataSet(fileName);
+                    if (dSet){
+                        station = dSet.fileName;
+                    }
+                }
+            }
+
+            ShowError('Error while loading station ' + station + ' file ' + fileName + '</h3><div>Error: ' + error.message + ' ' + status);
+
+            filesLoaded++;
+            progress.animate(filesLoaded / filesToLoad);                
+        }); 
+    }
+
+    function ShowError(errorText) {
+        $('#main').append('<section style="padding: 50px 0; text-align: center;" ><h3 style="color:red;">' + errorText + '</h3></section>');
+    }
+
+    function LoadChartDataset(dSet, loadSmallData){
+
+        var emptyFile = false;
+
+        if (dSet.dataLoaded) {
+            if (dSet.data && dSet.data.length > 0){
+                loadSmallData = true;
+            } else if(dSet.filedataLoaded && dSet.filedata && dSet.filedata.length > 0) {
+                loadSmallData = false;
+            } else {
+                emptyFile = true;
+            }
+        } else if (dSet.filedataLoaded){
+            if(dSet.filedata && dSet.filedata.length > 0) {
+                loadSmallData = false;
+            } else if (dSet.dataLoaded && dSet.data && dSet.data.length > 0){
+                loadSmallData = true;
+            } else {
+                emptyFile = true;
+            }
+        }
+
+        if (emptyFile && dSet.dataLoaded && dSet.filedataLoaded){
+            ShowError('No Data found for station ' +  dSet.name + ' either ' + dSet.shortFileName + ' or ' + dSet.fileName);
+            return;
+        }
+
+        if (!emptyFile){
+            var append = true;
+            var stationId = '#station_' + StationId(dSet);
+
+            var chartElement = $(stationId);
+            if (chartElement.length > 0) {
+                append = false;
+            }
+
+            LoadChart(dSet, append, loadSmallData);
+        }
+    }
+
+    function StationId(dSet){
+        return dSet.name.replace(' ', '_');
+    }
+
+    function GetDataSet(fileName){
+
+        for (let i = 0; i < DataSets.length; i++) {
+
+            var dataset = DataSets[i];
+            if (dataset.fileName === fileName){
+                return dataset;
+            } else if (dataset.shortFileName === fileName){
+                return dataset;
+            }
+        }
+
+        return undefined;
+    }
+
+    function LoadChart(dataset, append, useShortFile){
+
+        var delimiter = '\\s+';
+        if (dataset.fileName.includes('.csv')){
+            delimiter = ',';
+        }
+
+        var jsonData = null;
+
+        if (useShortFile){
+            jsonData = ConvertFilteToJsonData(dataset.data, delimiter);
+            dataset.dataRecords = jsonData.records;
+        } else {
+            jsonData = ConvertFilteToJsonData(dataset.filedata, delimiter);
+            dataset.filedataRecords = jsonData.records;
+        }        
+
+        // console.log("ConvertFilteToJsonData " + useShortFile);
+
+        ShowChartdataset(dataset, append, useShortFile);
+    }
+   
+    function ConvertFilteToJsonData(data, delimiter){
+
+        if (data !== undefined && data.length > 0){
+
+            return createJSONDataset(data, delimiter);
+
+            // dataset.data = cleanGOESDataset(roughData);
+        }
+
+        return null;
+    }
+
+    function ShowChartdataset(dataset, append, useShortFile){
+
+        var records = dataset.dataRecords;
+        if (!useShortFile){
+            records = dataset.filedataRecords;
+        }
+
+        if (records !== undefined && records.length > 0){
+
+            var chartData = loadChartData(records);
+            var stationId = StationId(dataset);
+
+            if (append){
+                var section = $(stationTemplate).clone();
+                
+                $(section).find('#station_title').text('Station ' + stationId);
+                $(section).find('#station_title').attr('id', 'station_title_' + stationId);
+
+                // $(section).find('#station_file_link').attr('href', baseurl + dataset.fileName);
+                // $(section).find('#station_file_link').text('Open data file ' + dataset.fileName);
+
+                $(section).find('#station_reload_btn').bind( "click", 
+                    function(){
+                        LoadChart(dataset, false, false);
+                    }
+                );
+
+                $(section).find('#station_reload_btn_14').bind( "click", 
+                    function(){
+                        LoadChart(dataset, false, true);
+                    }
+                );
+                
+                $(section).find('#station_weather_chartdiv').attr('id', 'station_weather_chartdiv_' + stationId);
+
+                $(section).find('#station_wind_chartdiv').attr('id', 'station_wind_chartdiv_' + stationId);         
+                
+                $(section).attr('id', 'station_' + stationId);
+
+                $(section).show();
+
+                $('#main').append(section);
+
+            //   createSerialAMChartWeather('station_weather_chartdiv_' + dataset.name, dateFormat, chartData);
+                
+            //   createSerialAMChartWind('station_wind_chartdiv_' + dataset.name, dateFormat, chartData);
+
+            // } else {
+
+            //     // only recreate the charts with the current chartdata
+            //     createSerialAMChartWeather('station_weather_chartdiv_' + dataset.name, dateFormat, chartData);
+                
+            //     createSerialAMChartWind('station_wind_chartdiv_' + dataset.name, dateFormat, chartData);
+            }
+
+            try {    
+                createSerialAMChartWeather('station_weather_chartdiv_' + stationId, dateFormat, chartData, amChartTheme);
+            } catch (error) {
+                ShowError(error);
+            }
+            
+            try {    
+                createSerialAMChartWind('station_wind_chartdiv_' + stationId, dateFormat, chartData, amChartTheme);
+            } catch (error) {
+                ShowError(error);
+            }
+
+        }
+    }
+
+    function loadChartData(records) {
+        var chartData = [];
+
+        //var dataset = {header: [label1, label2], records:[] }
+        var record;
+
+        for (var i = 0; i < records.length; i++) {
+
+            record = records[i];
+
+            chartData.push({
+                station: record.station,
+                date: record.time,
+                sw_down: record.sw_down,
+                sw_up: record.sw_up,
+                net_radiation: record.net_radiation,
+                tc_air_1: record.tc_air_1,
+                tc_air_2: record.tc_air_2,
+                wind_speed_u1: record.wind_speed_u1,
+                wind_speed_u2: record.wind_speed_u2,
+                wind_dir_u1: record.wind_dir_u1,
+                wind_dir_u2: record.wind_dir_u2,
+                pressure: record.pressure,
+            });
+        }
+
+        return chartData;
+    }
+
+
+
+
+</script>
+
+
+</html>

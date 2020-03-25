@@ -1,0 +1,19 @@
+title: Station
+
+files:
+  sortable: true
+
+pages: false
+
+fields:
+  title:
+    label: Title
+    type:  text
+
+  description:
+    label: Description
+    type:  textarea
+
+  station:
+    label: Station
+    type: text

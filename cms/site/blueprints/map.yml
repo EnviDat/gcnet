@@ -1,0 +1,20 @@
+title: Map
+
+files: false
+
+pages:
+  template: Map
+
+options:
+  template: false
+  status: false
+  url: false
+
+fields:
+  title:
+    label: Title
+    type:  text
+
+  description:
+    label: Description
+    type: textarea
